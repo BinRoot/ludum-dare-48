@@ -9,15 +9,23 @@ script = ExtResource( 2 )
 [node name="EnemyLeaders" type="Node2D" parent="."]
 
 [node name="EnemyLeader1" parent="EnemyLeaders" instance=ExtResource( 1 )]
-position = Vector2( 551.238, 98.8768 )
+position = Vector2( 650.939, 93.933 )
 IsCPU = true
 
 [node name="EnemyLeader2" parent="EnemyLeaders" instance=ExtResource( 1 )]
-position = Vector2( 658.355, 359.252 )
+position = Vector2( 884.124, 229.065 )
 IsCPU = true
 
 [node name="EnemyLeader3" parent="EnemyLeaders" instance=ExtResource( 1 )]
-position = Vector2( 292.511, 435.882 )
+position = Vector2( 754.76, 472.137 )
+IsCPU = true
+
+[node name="EnemyLeader4" parent="EnemyLeaders" instance=ExtResource( 1 )]
+position = Vector2( 407.867, 484.497 )
+IsCPU = true
+
+[node name="EnemyLeader5" parent="EnemyLeaders" instance=ExtResource( 1 )]
+position = Vector2( 161.499, 357.605 )
 IsCPU = true
 
 [node name="PlayerLeader" parent="." instance=ExtResource( 1 )]

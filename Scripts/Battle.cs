@@ -105,9 +105,11 @@ public class Battle : Node2D
 
     private void UpdateArmyPositions()
     {
-        Vector2 NorthPoint = new Vector2(GetViewport().Size.x / 2, 0);
-        Vector2 SouthPoint = new Vector2(GetViewport().Size.x / 2, GetViewport().Size.y);
-        Vector2 MidPoint = GetViewport().Size / 2;
+        Vector2 screenSize = GetViewportRect().Size;
+        // screenSize = GetViewport().Size
+        Vector2 NorthPoint = new Vector2(screenSize.x / 2, 0);
+        Vector2 SouthPoint = new Vector2(screenSize.x / 2, screenSize.y);
+        Vector2 MidPoint = screenSize / 2;
         PlayerArmy.Position = (MidPoint + SouthPoint) / 2;
         EnemyArmy.Position = (MidPoint + NorthPoint) / 2;
 

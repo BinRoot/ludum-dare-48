@@ -11,6 +11,8 @@ public class Kingdom : Node2D
     private Leader EnemyLeader1;
     private Leader EnemyLeader2;
     private Leader EnemyLeader3;
+    private Leader EnemyLeader4;
+    private Leader EnemyLeader5;
 
     private Button ChallengeButton;
     private Button BorrowButton;
@@ -35,6 +37,8 @@ public class Kingdom : Node2D
         EnemyLeader1 = GetNode<Leader>("EnemyLeaders/EnemyLeader1");
         EnemyLeader2 = GetNode<Leader>("EnemyLeaders/EnemyLeader2");
         EnemyLeader3 = GetNode<Leader>("EnemyLeaders/EnemyLeader3");
+        EnemyLeader4 = GetNode<Leader>("EnemyLeaders/EnemyLeader4");
+        EnemyLeader5 = GetNode<Leader>("EnemyLeaders/EnemyLeader5");
         ChallengeButton = GetNode<Button>("ChallengeButton");
         BorrowButton = GetNode<Button>("BorrowButton");
         BorrowDoneButton = GetNode<Button>("BorrowDoneButton");
@@ -42,10 +46,12 @@ public class Kingdom : Node2D
         Vector2 MidPoint = GetViewport().Size / 2;
         ChallengeButton.RectPosition = MidPoint - ChallengeButton.RectSize;
 
-        PopulateUnits(PlayerLeader, new List<int> { 1, 2 });
-        PopulateUnits(EnemyLeader1, new List<int> { 1, 1 });
-        PopulateUnits(EnemyLeader2, new List<int> { 1, 2, 2, 3 });
+        PopulateUnits(PlayerLeader, new List<int> { 1, });
+        PopulateUnits(EnemyLeader1, new List<int> { 1, 1, 4, 4, 5 });
+        PopulateUnits(EnemyLeader2, new List<int> { 1, 2, 2, 3, 3 });
         PopulateUnits(EnemyLeader3, new List<int> { 1, 1, 1, 2, 3, 4 });
+        PopulateUnits(EnemyLeader4, new List<int> { 5, 5, 5, 5 });
+        PopulateUnits(EnemyLeader5, new List<int> { 1, 1, 1, 1, 1, 1, 1, 1 });
 
         PlayerLeader.Connect("LeaderSelected", this, nameof(OnLeaderSelected));
         PlayerLeader.Connect("LeaderDeselected", this, nameof(OnLeaderDeselected));
