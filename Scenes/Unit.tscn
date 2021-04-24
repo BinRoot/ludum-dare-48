@@ -28,6 +28,18 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
+[node name="Label2" type="Label" parent="."]
+margin_right = 40.0
+margin_bottom = 14.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "Zzz..."
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]

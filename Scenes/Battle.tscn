@@ -8,8 +8,26 @@
 script = ExtResource( 1 )
 
 [node name="Sprite" type="Sprite" parent="."]
-position = Vector2( 521.358, 391.207 )
+position = Vector2( 981.778, 557.469 )
 texture = ExtResource( 3 )
 
-[node name="Army" parent="." instance=ExtResource( 2 )]
-position = Vector2( 521.358, 393.464 )
+[node name="PlayerArmy" parent="." instance=ExtResource( 2 )]
+position = Vector2( 325.755, 445.374 )
+
+[node name="EnemyArmy" parent="." instance=ExtResource( 2 )]
+position = Vector2( 293.405, 130.151 )
+IsCPU = true
+
+[node name="EngageButton" type="Button" parent="."]
+margin_right = 56.0
+margin_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+rect_scale = Vector2( 2, 2 )
+text = "Engage"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="EngageTimer" type="Timer" parent="."]
+one_shot = true
