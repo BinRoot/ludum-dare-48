@@ -22,6 +22,11 @@ public class Leader : Node2D
 
     private Sprite Highlight;
 
+    private int MovementSpeed = 200;
+
+    private Boolean IsAutoNavigating;
+    private Vector2 DestinationPosition;
+
     enum State
     {
         Idle,
@@ -46,6 +51,12 @@ public class Leader : Node2D
         }
     }
 
+    public void SetDestination(Vector2 destination)
+    {
+        DestinationPosition = destination;
+        IsAutoNavigating = true;
+    }
+
     public void SetHover()
     {
         CurrentState = State.Hover;
@@ -54,6 +65,21 @@ public class Leader : Node2D
     public void SetIdle()
     {
         CurrentState = State.Idle;
+    }
+
+    public Vector2 GetBodyPosition()
+    {
+        return KinematicBody.Position;
+    }
+
+    public Vector2 GetBodyGlobalPosition()
+    {
+        return KinematicBody.GlobalPosition;
+    }
+
+    public void CancelNavigation()
+    {
+        IsAutoNavigating = false;
     }
 
     private void OnAreaEntered(Area2D area)
@@ -140,7 +166,6 @@ public class Leader : Node2D
         return selectedUnits;
     }
 
-    //  // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(float delta)
     {
         if (!IsCPU)
@@ -168,8 +193,23 @@ public class Leader : Node2D
             if (vector.Length() > 0)
             {
                 DirectionFacing = new Vector2(vector);
+                IsAutoNavigating = false;
             }
-            KinematicBody.MoveAndSlide(vector * 200);
+            KinematicBody.MoveAndSlide(vector * MovementSpeed);
+        }
+
+        if (IsAutoNavigating)
+        {
+            Vector2 vector = DestinationPosition - KinematicBody.GlobalPosition;
+            if (vector.Length() > 50)
+            {
+                vector = vector.Normalized();
+                KinematicBody.MoveAndSlide(vector * MovementSpeed);
+            }
+            else
+            {
+                IsAutoNavigating = false;
+            }
         }
 
         if (CurrentState != State.Borrow)

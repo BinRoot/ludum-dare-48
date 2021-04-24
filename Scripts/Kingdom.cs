@@ -65,6 +65,14 @@ public class Kingdom : Node2D
         return PlayerLeader.GetUnits();
     }
 
+    public void SetPlayerDestination(Vector2 destination)
+    {
+        if (CurrentState != State.Borrow)
+        {
+            PlayerLeader.SetDestination(destination);
+        }
+    }
+
     public void RemovePlayerUnits()
     {
         PlayerLeader.RemoveUnits();
@@ -79,6 +87,12 @@ public class Kingdom : Node2D
     {
         SelectedLeader = leader;
         CurrentState = State.Selection;
+
+        // TODO: compare leader with player units
+        foreach (Unit leaderUnit in SelectedLeader.GetUnits())
+        {
+
+        }
     }
 
     private void OnLeaderDeselected()
@@ -96,12 +110,18 @@ public class Kingdom : Node2D
     private void OnBorrowButtonPressed()
     {
         CurrentState = State.Borrow;
+        PlayerLeader.CancelNavigation();
         SelectedLeader.StartBorrowMode();
     }
 
     private void OnBorrowDoneButtonPressed()
     {
         Unit[] leaderSelectedUnits = SelectedLeader.GetSelectedUnits().ToArray();
+        foreach (Unit unit in leaderSelectedUnits)
+        {
+            Vector2 offset = SelectedLeader.GetBodyGlobalPosition() - PlayerLeader.GetBodyGlobalPosition();
+            unit.Position += PlayerLeader.GetBodyPosition() - SelectedLeader.GetBodyPosition() + offset;
+        }
         Unit[] playerUnits = PlayerLeader.GetUnits().ToArray();
         SelectedLeader.RemoveSelectedUnits();
         List<Unit> totalSelectedUnits = new List<Unit>(leaderSelectedUnits);
@@ -114,13 +134,13 @@ public class Kingdom : Node2D
     private void PopulateUnits(Leader leader, List<int> unitPowers)
     {
         List<Unit> followers = new List<Unit>();
+        Random random = new Random();
         for (int unitIdx = 0; unitIdx < unitPowers.Count; unitIdx++)
         {
             Unit unitInstance = (Unit)UnitScene.Instance();
             unitInstance.Power = unitPowers[unitIdx];
-            Random random = new Random((int)leader.Name.Hash());
             unitInstance.Position = new Vector2(unitIdx * 64 - unitPowers.Count * 64 / 2, random.Next(-100, 100));
-            unitInstance.Modulate = new Color(random.Next(0, 255) / 256f, random.Next(0, 255) / 256f, random.Next(0, 255) / 256f, 1);
+            unitInstance.SetFactionId((int)leader.Name.Hash());
             followers.Add(unitInstance);
         }
         leader.AddUnits(followers);
@@ -140,14 +160,14 @@ public class Kingdom : Node2D
                 ChallengeButton.Show();
                 BorrowButton.Show();
                 BorrowDoneButton.Hide();
-                ChallengeButton.RectPosition = SelectedLeader.Position - ChallengeButton.RectSize;
-                BorrowButton.RectPosition = SelectedLeader.Position - BorrowButton.RectSize + Vector2.Down * ChallengeButton.RectSize.y;
+                ChallengeButton.RectPosition = SelectedLeader.Position - ChallengeButton.RectSize / 2 + Vector2.Up * 20;
+                BorrowButton.RectPosition = SelectedLeader.Position - BorrowButton.RectSize / 2 + Vector2.Down * ChallengeButton.RectSize.y;
                 break;
             case State.Borrow:
                 ChallengeButton.Hide();
                 BorrowButton.Hide();
                 BorrowDoneButton.Show();
-                BorrowDoneButton.RectPosition = SelectedLeader.Position - ChallengeButton.RectSize + Vector2.Down * ChallengeButton.RectSize.y;
+                BorrowDoneButton.RectPosition = SelectedLeader.Position - BorrowDoneButton.RectSize / 2 + Vector2.Down * ChallengeButton.RectSize.y;
                 break;
         }
     }

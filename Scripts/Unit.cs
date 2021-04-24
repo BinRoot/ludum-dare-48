@@ -21,6 +21,8 @@ public class Unit : KinematicBody2D
 
     private Sprite Highlight;
 
+    private int FactionId;
+
     private State CurrentState = State.Default;
     enum State
     {
@@ -30,6 +32,9 @@ public class Unit : KinematicBody2D
         Resting,
         Following
     }
+
+    private Random Random;
+
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -49,6 +54,7 @@ public class Unit : KinematicBody2D
         Label2.RectSize = new Vector2(20, 20);
 
         Highlight.Hide();
+        Random = new Random();
 
         SetIsCPU(IsCPU);
     }
@@ -161,6 +167,13 @@ public class Unit : KinematicBody2D
             }
             EmitSignal(nameof(UnitSelected), this);
         }
+    }
+
+    public void SetFactionId(int id)
+    {
+        FactionId = id;
+        Random = new Random(FactionId);
+        Modulate = new Color(Random.Next(0, 255) / 256f, Random.Next(0, 255) / 256f, Random.Next(0, 255) / 256f, 1);
     }
 
     private void OnMouseEntered()

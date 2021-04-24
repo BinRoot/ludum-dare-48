@@ -49,6 +49,15 @@ public class Main : Node2D
         Battle.AddEnemyUnits(new List<Unit>(enemyUnits));
     }
 
+    public override void _Input(InputEvent @event)
+    {
+        base._Input(@event);
+        if (CurrentState == State.Kingdom && @event.IsPressed() && @event is InputEventMouseButton)
+        {
+            Kingdom.SetPlayerDestination(((InputEventMouseButton)@event).Position);
+        }
+    }
+
     public override void _Process(float delta)
     {
         switch (CurrentState)
