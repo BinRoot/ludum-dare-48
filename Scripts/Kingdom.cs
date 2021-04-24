@@ -77,7 +77,6 @@ public class Kingdom : Node2D
 
     private void OnLeaderDeselected()
     {
-        GD.Print("OnLeaderDeselected");
         SelectedLeader = null;
         CurrentState = State.Default;
     }
@@ -109,13 +108,12 @@ public class Kingdom : Node2D
     private void PopulateUnits(Leader leader, List<int> unitPowers)
     {
         List<Unit> followers = new List<Unit>();
-        Random r = new Random();
         for (int unitIdx = 0; unitIdx < unitPowers.Count; unitIdx++)
         {
             Unit unitInstance = (Unit)UnitScene.Instance();
             unitInstance.Power = unitPowers[unitIdx];
-            unitInstance.Position = new Vector2(unitIdx * 64 - unitPowers.Count * 64 / 2, r.Next(-60, -30));
             Random random = new Random((int)leader.Name.Hash());
+            unitInstance.Position = new Vector2(unitIdx * 64 - unitPowers.Count * 64 / 2, random.Next(-100, 100));
             unitInstance.Modulate = new Color(random.Next(0, 255) / 256f, random.Next(0, 255) / 256f, random.Next(0, 255) / 256f, 1);
             followers.Add(unitInstance);
         }

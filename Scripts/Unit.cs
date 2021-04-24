@@ -60,7 +60,6 @@ public class Unit : KinematicBody2D
 
     public void StartBorrowMode()
     {
-        GD.Print(Name, " starting borrow mode");
         IsBorrowMode = true;
         UpdateSignals();
     }
@@ -108,7 +107,6 @@ public class Unit : KinematicBody2D
     {
         if (IsCPU && !IsBorrowMode)
         {
-            GD.Print(Name, " disconnecting");
             if (Area2D.IsConnected("mouse_entered", this, nameof(OnMouseEntered)))
             {
                 Area2D.Disconnect("mouse_entered", this, nameof(OnMouseEntered));
@@ -124,7 +122,6 @@ public class Unit : KinematicBody2D
         }
         else
         {
-            GD.Print(Name, " connecting");
             if (!Area2D.IsConnected("mouse_entered", this, nameof(OnMouseEntered)))
             {
                 Area2D.Connect("mouse_entered", this, nameof(OnMouseEntered));
@@ -168,7 +165,6 @@ public class Unit : KinematicBody2D
 
     private void OnMouseEntered()
     {
-        GD.Print(Name, " mouse entered ", CurrentState);
         if (CurrentState == State.Default)
         {
             CurrentState = State.MouseHover;

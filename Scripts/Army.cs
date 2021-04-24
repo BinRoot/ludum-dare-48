@@ -22,8 +22,6 @@ public class Army : Node2D
 
     public void AddUnits(List<Unit> units)
     {
-        GD.Print(Name, " adding ", units.ToArray().Length, " units");
-
         foreach (Unit unit in Units.ToArray())
         {
             RemoveChild(unit);
@@ -31,7 +29,6 @@ public class Army : Node2D
         Units.Clear();
         foreach (Unit unit in units.ToArray())
         {
-            GD.Print(Name, " added ", unit.Name);
             AddChild(unit);
             unit.SetDefault();
         }
@@ -137,14 +134,12 @@ public class Army : Node2D
         UpdateChildrenUnits();
         int totalPowerCount = 0;
         SelectedUnits.Clear();
-        GD.Print(Name, " has ", Units.Count, " units");
         int xSpacing = 66;
         int xOffset = xSpacing * (Units.Count - 1) / 2;
         for (int unitIdx = 0; unitIdx < Units.Count; unitIdx++)
         {
             Unit unit = Units[unitIdx];
             unit.Position = new Vector2(xSpacing * unitIdx - xOffset, 0);
-            GD.Print(unit.Name, " ", unit.Position, " ", unit.GlobalPosition);
             unit.SetIsCPU(IsCPU);
             if (!unit.IsConnected("UnitSelected", this, nameof(OnUnitSelected)))
             {

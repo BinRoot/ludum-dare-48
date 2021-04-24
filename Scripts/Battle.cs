@@ -39,7 +39,6 @@ public class Battle : Node2D
         EnemyArmy.WakeUnits();
         int playerPower = PlayerArmy.GetTotalPower();
         int enemyPower = EnemyArmy.GetTotalPower();
-        GD.Print("player ", playerPower, " enemy ", enemyPower);
         List<Unit> enemySelectedUnits = EnemyArmy.GetSelectedUnits();
         List<Unit> playerSelectedUnits = PlayerArmy.GetSelectedUnits();
         if (playerPower > enemyPower)
