@@ -18,17 +18,33 @@ public class Army : Node2D
     public override void _Ready()
     {
         TotalCountLabel = GetNode<Label>("TotalCountLabel");
+    }
+
+    public void AddUnits(List<Unit> units)
+    {
+        GD.Print(Name, " adding ", units.ToArray().Length, " units");
+
+        foreach (Unit unit in Units.ToArray())
+        {
+            RemoveChild(unit);
+        }
+        Units.Clear();
+        foreach (Unit unit in units.ToArray())
+        {
+            GD.Print(Name, " added ", unit.Name);
+            AddChild(unit);
+            unit.SetDefault();
+        }
         UpdateUnitPositions();
-        Randomize();
     }
 
     public void Randomize()
     {
-        UpdateUnitPositions();
         foreach (Unit unit in Units.ToArray())
         {
-            unit.QueueFree();
+            RemoveChild(unit);
         }
+        Units.Clear();
         Random random = new Random();
         var unitScene = GD.Load<PackedScene>("res://Scenes/Unit.tscn");
         for (int i = 0; i < random.Next(3, 6); i++)
@@ -42,7 +58,6 @@ public class Army : Node2D
 
     private void OnUnitSelected(Unit unit)
     {
-        GD.Print(unit.Name, " selected");
         UpdateUnitPositions();
     }
 
@@ -69,6 +84,20 @@ public class Army : Node2D
         return new List<Unit>(SelectedUnits);
     }
 
+    public List<Unit> GetUnits()
+    {
+        return Units;
+    }
+
+    public void RemoveUnits()
+    {
+        foreach (Unit unit in Units.ToArray())
+        {
+            RemoveChild(unit);
+        }
+        Units.Clear();
+    }
+
     public void AddRestingUnits(List<Unit> units)
     {
         foreach (Unit unit in units)
@@ -91,11 +120,9 @@ public class Army : Node2D
         return TotalPower;
     }
 
-    public void UpdateUnitPositions()
+    private void UpdateChildrenUnits()
     {
-        int totalPowerCount = 0;
         Units.Clear();
-        SelectedUnits.Clear();
         foreach (Node node in GetChildren())
         {
             if (node is Unit)
@@ -103,12 +130,21 @@ public class Army : Node2D
                 Units.Add((Unit)node);
             }
         }
+    }
+
+    public void UpdateUnitPositions()
+    {
+        UpdateChildrenUnits();
+        int totalPowerCount = 0;
+        SelectedUnits.Clear();
+        GD.Print(Name, " has ", Units.Count, " units");
         int xSpacing = 66;
         int xOffset = xSpacing * (Units.Count - 1) / 2;
         for (int unitIdx = 0; unitIdx < Units.Count; unitIdx++)
         {
-            Unit unit = (Unit)Units[unitIdx];
+            Unit unit = Units[unitIdx];
             unit.Position = new Vector2(xSpacing * unitIdx - xOffset, 0);
+            GD.Print(unit.Name, " ", unit.Position, " ", unit.GlobalPosition);
             unit.SetIsCPU(IsCPU);
             if (!unit.IsConnected("UnitSelected", this, nameof(OnUnitSelected)))
             {

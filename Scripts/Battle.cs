@@ -4,16 +4,18 @@ using Godot;
 
 public class Battle : Node2D
 {
-    // Declare member variables here. Examples:
-    // private int a = 2;
-    // private string b = "text";
+    [Signal]
+    public delegate void Retreated(Leader leader);
 
     private Army PlayerArmy;
     private Army EnemyArmy;
 
     private Button EngageButton;
+    private Button RetreatButton;
 
     private Timer EngageTimer;
+
+    private Leader EnemyLeader;
 
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
@@ -21,9 +23,11 @@ public class Battle : Node2D
         PlayerArmy = GetNode<Army>("PlayerArmy");
         EnemyArmy = GetNode<Army>("EnemyArmy");
         EngageButton = GetNode<Button>("EngageButton");
+        RetreatButton = GetNode<Button>("RetreatButton");
         EngageTimer = GetNode<Timer>("EngageTimer");
 
         EngageButton.Connect("pressed", this, nameof(OnEngagePressed));
+        RetreatButton.Connect("pressed", this, nameof(OnRetreatPressed));
         EngageTimer.Connect("timeout", this, nameof(OnEngageTimeout));
 
         UpdateArmyPositions();
@@ -58,6 +62,46 @@ public class Battle : Node2D
     {
         EnemyArmy.SetRandomSelection();
         EngageTimer.Start();
+    }
+
+    public void SetEnemyLeader(Leader leader)
+    {
+        this.EnemyLeader = leader;
+    }
+
+    private void OnRetreatPressed()
+    {
+        EmitSignal(nameof(Retreated), EnemyLeader);
+    }
+
+    public void AddPlayerUnits(List<Unit> units)
+    {
+        PlayerArmy.AddUnits(units);
+    }
+
+    public List<Unit> GetPlayerUnits()
+    {
+        return PlayerArmy.GetUnits();
+    }
+
+    public void RemovePlayerUnits()
+    {
+        PlayerArmy.RemoveUnits();
+    }
+
+    public void RemoveEnemyUnits()
+    {
+        EnemyArmy.RemoveUnits();
+    }
+
+    public List<Unit> GetEnemyUnits()
+    {
+        return EnemyArmy.GetUnits();
+    }
+
+    public void AddEnemyUnits(List<Unit> units)
+    {
+        EnemyArmy.AddUnits(units);
     }
 
     private void UpdateArmyPositions()
