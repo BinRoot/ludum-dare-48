@@ -18,6 +18,8 @@ public class Main : Node2D
     private Camera2D FollowCam;
     private Camera2D BattleCam;
 
+    PackedScene MarkerScene = GD.Load<PackedScene>("res://Scenes/Marker.tscn");
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -28,7 +30,6 @@ public class Main : Node2D
 
         Kingdom.Connect("BattleInitiated", this, nameof(OnBattleInitiated));
         Battle.Connect("Retreated", this, nameof(OnRetreated));
-
     }
 
     private void OnRetreated(Leader leader)
@@ -38,7 +39,6 @@ public class Main : Node2D
         CurrentState = State.Kingdom;
 
         Unit[] playerUnits = Battle.GetPlayerUnits().ToArray();
-        Random random = new Random();
         foreach (Unit playerUnit in playerUnits)
         {
             playerUnit.CollisionMask = 4;
@@ -82,13 +82,17 @@ public class Main : Node2D
         Battle.AddEnemyUnits(new List<Unit>(enemyUnits));
     }
 
-    public override void _Input(InputEvent @event)
+
+    public override void _UnhandledInput(InputEvent @event)
     {
-        base._Input(@event);
+        base._UnhandledInput(@event);
         if (CurrentState == State.Kingdom && @event.IsPressed() && @event is InputEventMouseButton)
         {
             Vector2 pos = GetGlobalMousePosition();
             Kingdom.SetPlayerDestination(pos);
+            Marker marker = (Marker)MarkerScene.Instance();
+            AddChild(marker);
+            marker.GlobalPosition = pos;
         }
     }
 

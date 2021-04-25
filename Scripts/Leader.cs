@@ -11,7 +11,7 @@ public class Leader : Node2D
     public delegate void LeaderDeselected();
 
     [Export]
-    private Boolean IsCPU = false;
+    public Boolean IsCPU = false;
 
     [Export]
     public Boolean IsBorrowOnly = false;
@@ -32,8 +32,13 @@ public class Leader : Node2D
 
     private Label DebtLabel;
     private Label DebugLabel;
+    private Label DialogLabel;
 
     private int Debt = 0;
+
+    private int TutorialStep = 0;
+
+    private float Duration = 0;
 
     public int FactionId
     {
@@ -51,6 +56,7 @@ public class Leader : Node2D
     }
 
     private Camera2D Camera;
+    private Leader PlayerLeader;
 
     private State CurrentState = State.Idle;
 
@@ -63,6 +69,7 @@ public class Leader : Node2D
         Highlight = GetNode<Sprite>("KinematicBody2D/Highlight");
         DebtLabel = GetNode<Label>("KinematicBody2D/DebtLabel");
         DebugLabel = GetNode<Label>("KinematicBody2D/DebugLabel");
+        DialogLabel = GetNode<Label>("KinematicBody2D/DialogLabel");
 
         if (!IsCPU)
         {
@@ -71,9 +78,10 @@ public class Leader : Node2D
         }
 
         Random random = new Random(FactionId);
-        KinematicBody.Modulate = new Color(random.Next(0, 255) / 256f, random.Next(0, 255) / 256f, random.Next(0, 255) / 256f, 1);
+        KinematicBody.Modulate = new Color(random.Next(0, 128) / 256f, random.Next(0, 128) / 256f, random.Next(0, 128) / 256f, 1);
 
         Camera = (Camera2D)GetTree().GetNodesInGroup("camera")[0];
+        PlayerLeader = (Leader)GetTree().GetNodesInGroup("player_leader")[0];
     }
 
     public int GetDebt()
@@ -329,6 +337,143 @@ public class Leader : Node2D
             case State.Defeated:
                 DebugLabel.Show();
                 break;
+        }
+
+        Duration += delta;
+        if (Name == "EnemyLeader1")
+        {
+            if (TutorialStep == 0 && Duration > 5)
+            {
+                DialogLabel.Text = "Prince, is that really you?";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 1 && CurrentState == State.Borrow && Duration > 0.2)
+            {
+                DialogLabel.Text = "Go ahead, you'll need them!";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 2 && CurrentState == State.Borrow && Duration > 3)
+            {
+                DialogLabel.Text = "Pick my units, then press done.";
+            }
+            else if (TutorialStep == 2 && CurrentState == State.Idle && Duration > 0.2 && GetUnits().Count == 0)
+            {
+                DialogLabel.Text = "Excellent!";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 2 && CurrentState == State.Idle && Duration > 0.2 && GetUnits().Count > 0)
+            {
+                DialogLabel.Text = "Borrow my units, you'll need them.";
+                Duration = 0;
+            }
+            else if (TutorialStep == 3 && Duration > 2)
+            {
+                DialogLabel.Text = "";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 4 && Duration > 0.5)
+            {
+                DialogLabel.Text = "Be wise borrowing units...";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 5 && Duration > 3)
+            {
+                DialogLabel.Text = "... or you'll be deep in debt!";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 6 && Duration > 3)
+            {
+                DialogLabel.Text = "";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 7 && Duration > 0.5)
+            {
+                DialogLabel.Text = "Interest rates are high around here...";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 8 && Duration > 4)
+            {
+                DialogLabel.Text = "";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+        }
+        else if (Name == "EnemyLeader2")
+        {
+            if (TutorialStep == 0 && PlayerLeader.GetKinematicGlobalPosition().DistanceTo(GetKinematicGlobalPosition()) < 300)
+            {
+                DialogLabel.Text = "Hey, look it's the prince!";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 1 && Duration > 2)
+            {
+                DialogLabel.Text = "";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+        }
+        else if (Name == "EnemyLeader3")
+        {
+            if (TutorialStep == 0 && PlayerLeader.GetKinematicGlobalPosition().DistanceTo(GetKinematicGlobalPosition()) < 300)
+            {
+                DialogLabel.Text = "If you borrow my men...";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 1 && Duration > 2)
+            {
+                DialogLabel.Text = "... then you better pay me back";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 2 && Duration > 2)
+            {
+                DialogLabel.Text = "";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (CurrentState == State.Borrow && TutorialStep < 10)
+            {
+                DialogLabel.Text = "Not much to pick from, buddy";
+                TutorialStep = 10;
+                Duration = 0;
+            }
+            else if (TutorialStep == 10 && Duration > 2)
+            {
+                DialogLabel.Text = "But it'll serve you well";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 11 && Duration > 2)
+            {
+                DialogLabel.Text = "";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+        }
+        else if (Name == "EnemyLeader4")
+        {
+            if (TutorialStep == 0 && PlayerLeader.GetKinematicGlobalPosition().DistanceTo(GetKinematicGlobalPosition()) < 300)
+            {
+                DialogLabel.Text = "This isn't amateur hour!";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 1 && Duration > 2)
+            {
+                DialogLabel.Text = "";
+                TutorialStep += 1;
+                Duration = 0;
+            }
         }
     }
 }

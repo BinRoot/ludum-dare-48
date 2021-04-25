@@ -62,15 +62,40 @@ public class Army : Node2D
         Random random = new Random();
         if (Units.Count > 0)
         {
-            int idx1 = random.Next(0, Units.Count);
-            if (!Units[idx1].IsResting())
+            List<Unit> nonRestingUnits = new List<Unit>();
+            foreach (Unit unit in Units.ToArray())
             {
-                Units[idx1].SetSelected();
+                if (!unit.IsResting())
+                {
+                    nonRestingUnits.Add(unit);
+                }
             }
-            int idx2 = random.Next(0, Units.Count);
-            if (!Units[idx2].IsResting())
+
+            if (nonRestingUnits.Count == 0)
             {
-                Units[idx2].SetSelected();
+                return;
+            }
+
+            int idx1 = random.Next(0, nonRestingUnits.Count);
+            if (!nonRestingUnits[idx1].IsResting())
+            {
+                nonRestingUnits[idx1].SetSelected();
+            }
+            if (random.Next(0, 2) == 0)
+            {
+                int idx2 = random.Next(0, nonRestingUnits.Count);
+                if (!nonRestingUnits[idx2].IsResting())
+                {
+                    nonRestingUnits[idx2].SetSelected();
+                }
+            }
+            if (random.Next(0, 2) == 0)
+            {
+                int idx3 = random.Next(0, nonRestingUnits.Count);
+                if (!nonRestingUnits[idx3].IsResting())
+                {
+                    nonRestingUnits[idx3].SetSelected();
+                }
             }
         }
     }
@@ -171,8 +196,8 @@ public class Army : Node2D
         }
         TotalPower = totalPowerCount;
         TotalCountLabel.Text = totalPowerCount.ToString();
-        TotalCountLabel.RectPosition = new Vector2(-100, -100 + 50 * (IsCPU ? 1 : -1));
-        TotalCountLabel.RectSize = new Vector2(200, 200);
+        TotalCountLabel.RectPosition = new Vector2(-2, -20 + 50 * (IsCPU ? 1 : -1));
+        //TotalCountLabel.RectSize = new Vector2(200, 200);
     }
 
     public void WakeUnits()

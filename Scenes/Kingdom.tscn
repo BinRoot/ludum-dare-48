@@ -1,43 +1,64 @@
-[gd_scene load_steps=3 format=2]
+[gd_scene load_steps=5 format=2]
 
 [ext_resource path="res://Scenes/Leader.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scripts/Kingdom.cs" type="Script" id=2]
+[ext_resource path="res://Resources/button_font.tres" type="DynamicFont" id=3]
+[ext_resource path="res://Assets/Background3.png" type="Texture" id=4]
 
 [node name="Kingdom" type="Node2D"]
 script = ExtResource( 2 )
 
+[node name="Background3" type="Sprite" parent="."]
+position = Vector2( 1162.8, 328.219 )
+texture = ExtResource( 4 )
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Background3"]
+
 [node name="EnemyLeaders" type="Node2D" parent="."]
 
 [node name="EnemyLeader1" parent="EnemyLeaders" instance=ExtResource( 1 )]
-position = Vector2( 343.597, 117.004 )
+position = Vector2( 381.385, 234.688 )
 IsCPU = true
 IsBorrowOnly = true
 
 [node name="EnemyLeader2" parent="EnemyLeaders" instance=ExtResource( 1 )]
-position = Vector2( 1137.91, 231.537 )
+position = Vector2( 1091.34, 185.678 )
 IsCPU = true
 
 [node name="EnemyLeader3" parent="EnemyLeaders" instance=ExtResource( 1 )]
-position = Vector2( 1142.85, 475.433 )
+position = Vector2( 1267.01, 471.114 )
 IsCPU = true
 
 [node name="EnemyLeader4" parent="EnemyLeaders" instance=ExtResource( 1 )]
-position = Vector2( 1984.13, 345.245 )
+position = Vector2( 1918.21, 159.851 )
 IsCPU = true
 
 [node name="EnemyLeader5" parent="EnemyLeaders" instance=ExtResource( 1 )]
-position = Vector2( 2714.99, 350.189 )
+position = Vector2( 2227.94, 342.009 )
 IsCPU = true
 
-[node name="PlayerLeader" parent="." instance=ExtResource( 1 )]
-position = Vector2( 112.06, 158.203 )
+[node name="EnemyLeader6" parent="EnemyLeaders" instance=ExtResource( 1 )]
+position = Vector2( 1726.31, 493.562 )
+IsCPU = true
+
+[node name="PlayerLeader" parent="." groups=[
+"player_leader",
+] instance=ExtResource( 1 )]
+position = Vector2( 132.574, 305.038 )
 
 [node name="ChallengeButton" type="Button" parent="."]
 margin_right = 12.0
 margin_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_default_cursor_shape = 2
+custom_fonts/font = ExtResource( 3 )
+custom_colors/font_color_disabled = Color( 0.321569, 0.415686, 0.403922, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0.47451, 0.196078, 0.701961, 1 )
+custom_colors/font_color_pressed = Color( 0.231373, 0.0745098, 0.360784, 1 )
 text = "Challenge"
+flat = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -47,7 +68,14 @@ margin_right = 12.0
 margin_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_default_cursor_shape = 2
+custom_fonts/font = ExtResource( 3 )
+custom_colors/font_color_disabled = Color( 0.321569, 0.415686, 0.403922, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0.47451, 0.196078, 0.701961, 1 )
+custom_colors/font_color_pressed = Color( 0.231373, 0.0745098, 0.360784, 1 )
 text = "Borrow"
+flat = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -57,7 +85,14 @@ margin_right = 12.0
 margin_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_default_cursor_shape = 2
+custom_fonts/font = ExtResource( 3 )
+custom_colors/font_color_disabled = Color( 0.321569, 0.415686, 0.403922, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0.47451, 0.196078, 0.701961, 1 )
+custom_colors/font_color_pressed = Color( 0.231373, 0.0745098, 0.360784, 1 )
 text = "Done"
+flat = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -67,7 +102,14 @@ margin_right = 12.0
 margin_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_default_cursor_shape = 2
+custom_fonts/font = ExtResource( 3 )
+custom_colors/font_color_disabled = Color( 0.321569, 0.415686, 0.403922, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0.47451, 0.196078, 0.701961, 1 )
+custom_colors/font_color_pressed = Color( 0.231373, 0.0745098, 0.360784, 1 )
 text = "Settle Debt"
+flat = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -77,7 +119,14 @@ margin_right = 12.0
 margin_bottom = 20.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_default_cursor_shape = 2
+custom_fonts/font = ExtResource( 3 )
+custom_colors/font_color_disabled = Color( 0.321569, 0.415686, 0.403922, 1 )
+custom_colors/font_color = Color( 0, 0, 0, 1 )
+custom_colors/font_color_hover = Color( 0.47451, 0.196078, 0.701961, 1 )
+custom_colors/font_color_pressed = Color( 0.231373, 0.0745098, 0.360784, 1 )
 text = "Done"
+flat = true
 __meta__ = {
 "_edit_use_anchors_": false
 }

@@ -163,7 +163,10 @@ public class Unit : KinematicBody2D
     public void SetIsCPU(Boolean isCpu)
     {
         this.IsCPU = isCpu;
-        UpdateSignals();
+        if (Area2D != null)
+        {
+            UpdateSignals();
+        }
     }
 
     private void OnInputEvent(Node viewPort, InputEvent inputEvent, int shapeIdx)
@@ -248,7 +251,7 @@ public class Unit : KinematicBody2D
             case State.Following:
                 Highlight.Hide();
                 Label2.Hide();
-                NavigateTo(LeaderPosition);
+                NavigateTo(LeaderPosition, 64);
                 break;
             case State.Navigating:
                 Highlight.Hide();

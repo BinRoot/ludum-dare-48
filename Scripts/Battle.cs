@@ -99,6 +99,11 @@ public class Battle : Node2D
         }
 
         CurrentState = State.PreBattle;
+
+        if (EnemyArmy.GetUnits().Count == 0 || PlayerArmy.GetUnits().Count == 0)
+        {
+            OnRetreatPressed();
+        }
     }
 
     private void OnEngagePressed()
@@ -164,7 +169,7 @@ public class Battle : Node2D
         Vector2 MidPoint = screenSize / 2;
         PlayerArmy.Position = (MidPoint + SouthPoint) / 2;
         EnemyArmy.Position = (MidPoint + NorthPoint) / 2;
-        EngageButton.RectPosition = MidPoint - EngageButton.RectSize;
+        EngageButton.RectPosition = MidPoint - EngageButton.RectSize / 2;
     }
 
     //  // Called every frame. 'delta' is the elapsed time since the previous frame.
