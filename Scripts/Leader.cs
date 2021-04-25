@@ -27,12 +27,27 @@ public class Leader : Node2D
     private Boolean IsAutoNavigating;
     private Vector2 DestinationPosition;
 
+    private Label DebtLabel;
+    private Label DebugLabel;
+
+    private int Debt = 0;
+
+    public int FactionId
+    {
+        get
+        {
+            return (int)Name.Hash();
+        }
+    }
     enum State
     {
         Idle,
         Hover,
         Borrow,
+        Defeated,
     }
+
+    private Camera2D Camera;
 
     private State CurrentState = State.Idle;
 
@@ -43,12 +58,25 @@ public class Leader : Node2D
         FollowersNode = GetNode<Node2D>("Followers");
         Area2D = GetNode<Area2D>("KinematicBody2D/Area2D");
         Highlight = GetNode<Sprite>("KinematicBody2D/Highlight");
+        DebtLabel = GetNode<Label>("KinematicBody2D/DebtLabel");
+        DebugLabel = GetNode<Label>("KinematicBody2D/DebugLabel");
 
         if (!IsCPU)
         {
             Area2D.Connect("area_entered", this, nameof(OnAreaEntered));
             Area2D.Connect("area_exited", this, nameof(OnAreaExited));
         }
+
+        Random random = new Random(FactionId);
+        KinematicBody.Modulate = new Color(random.Next(0, 255) / 256f, random.Next(0, 255) / 256f, random.Next(0, 255) / 256f, 1);
+
+        Camera = (Camera2D)GetTree().GetNodesInGroup("camera")[0];
+    }
+
+
+    public int GetDebt()
+    {
+        return Debt;
     }
 
     public void SetDestination(Vector2 destination)
@@ -82,12 +110,37 @@ public class Leader : Node2D
         IsAutoNavigating = false;
     }
 
+    public Boolean IsDefeated()
+    {
+        return CurrentState == State.Defeated;
+    }
+
+    public void SetDefeated()
+    {
+        CurrentState = State.Defeated;
+    }
+
     private void OnAreaEntered(Area2D area)
     {
         Leader leader = (Leader)area.GetParent().GetParent();
-        leader.SetHover();
-        EmitSignal(nameof(LeaderSelected), leader);
+        if (!leader.IsDefeated())
+        {
+            leader.SetHover();
+            EmitSignal(nameof(LeaderSelected), leader);
+        }
     }
+
+    private void OnAreaExited(Area2D area)
+    {
+        Leader leader = (Leader)area.GetParent().GetParent();
+        if (!leader.IsDefeated())
+        {
+            leader.SetIdle();
+            leader.StopBorrowMode();
+        }
+        EmitSignal(nameof(LeaderDeselected));
+    }
+
 
     public void StartBorrowMode()
     {
@@ -109,14 +162,6 @@ public class Leader : Node2D
         }
     }
 
-    private void OnAreaExited(Area2D area)
-    {
-        Leader leader = (Leader)area.GetParent().GetParent();
-        leader.SetIdle();
-        leader.StopBorrowMode();
-        EmitSignal(nameof(LeaderDeselected));
-    }
-
     public void RemoveUnits()
     {
         foreach (Unit unit in Units.ToArray())
@@ -134,17 +179,60 @@ public class Leader : Node2D
             {
                 FollowersNode.RemoveChild(unit);
                 Units.Remove(unit);
+                Debt += unit.Power;
+            }
+        }
+        UpdateDebtLabel();
+    }
+
+    public void AddUnits(List<Unit> units, Boolean forcePosition = false)
+    {
+        Units.Clear();
+        Units.AddRange(units);
+        Random random = new Random();
+        foreach (Unit unit in units.ToArray())
+        {
+            FollowersNode.AddChild(unit);
+            if (forcePosition)
+            {
+                unit.GlobalPosition = KinematicBody.GlobalPosition + new Vector2(random.Next(-100, 100), random.Next(-100, 100));
             }
         }
     }
 
-    public void AddUnits(List<Unit> units)
+    public Vector2 GetKinematicGlobalPosition()
     {
-        Units.Clear();
-        Units.AddRange(units);
-        foreach (Unit unit in units.ToArray())
+        return KinematicBody.GlobalPosition;
+    }
+
+    public void RaiseDebt()
+    {
+        if (Debt > 0)
         {
-            FollowersNode.AddChild(unit);
+            Debt = (int)(Debt * 1.2);
+        }
+        UpdateDebtLabel();
+    }
+
+    public void Credit(int amount)
+    {
+        Debt -= amount;
+        UpdateDebtLabel();
+    }
+
+    private void UpdateDebtLabel()
+    {
+        if (IsCPU)
+        {
+            DebtLabel.Text = $"-{Debt} DEBT";
+            if (Debt > 0)
+            {
+                DebtLabel.Show();
+            }
+            else
+            {
+                DebtLabel.Hide();
+            }
         }
     }
 
@@ -170,6 +258,7 @@ public class Leader : Node2D
     {
         if (!IsCPU)
         {
+            Camera.GlobalPosition = KinematicBody.GlobalPosition;
             Vector2 vector = Vector2.Zero;
 
             if (Input.IsActionPressed("ui_up"))
@@ -221,14 +310,18 @@ public class Leader : Node2D
             }
         }
 
-
         switch (CurrentState)
         {
             case State.Idle:
                 Highlight.Hide();
+                DebugLabel.Hide();
                 break;
             case State.Hover:
                 Highlight.Show();
+                DebugLabel.Hide();
+                break;
+            case State.Defeated:
+                DebugLabel.Show();
                 break;
         }
     }

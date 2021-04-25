@@ -11,3 +11,11 @@ script = ExtResource( 3 )
 
 [node name="Battle" parent="." instance=ExtResource( 2 )]
 visible = false
+
+[node name="FollowCam" type="Camera2D" parent="." groups=[
+"camera",
+]]
+current = true
+
+[node name="BattleCam" type="Camera2D" parent="."]
+offset = Vector2( 512, 300 )

@@ -7,6 +7,8 @@ public class Kingdom : Node2D
 
     [Signal]
     public delegate void BattleInitiated(Leader leader);
+
+    private Node2D EnemyLeadersNode;
     private Leader PlayerLeader;
     private Leader EnemyLeader1;
     private Leader EnemyLeader2;
@@ -17,12 +19,17 @@ public class Kingdom : Node2D
     private Button ChallengeButton;
     private Button BorrowButton;
     private Button BorrowDoneButton;
+    private Button SettleDebtButton;
+    private Button SettleDebtDoneButton;
+
+    private Boolean IsFactionWillingToFight;
 
     enum State
     {
         Default,
         Selection,
         Borrow,
+        SettleDebt,
     }
 
     private Leader SelectedLeader = null;
@@ -34,6 +41,7 @@ public class Kingdom : Node2D
     public override void _Ready()
     {
         PlayerLeader = GetNode<Leader>("PlayerLeader");
+        EnemyLeadersNode = GetNode<Node2D>("EnemyLeaders");
         EnemyLeader1 = GetNode<Leader>("EnemyLeaders/EnemyLeader1");
         EnemyLeader2 = GetNode<Leader>("EnemyLeaders/EnemyLeader2");
         EnemyLeader3 = GetNode<Leader>("EnemyLeaders/EnemyLeader3");
@@ -42,22 +50,26 @@ public class Kingdom : Node2D
         ChallengeButton = GetNode<Button>("ChallengeButton");
         BorrowButton = GetNode<Button>("BorrowButton");
         BorrowDoneButton = GetNode<Button>("BorrowDoneButton");
+        SettleDebtButton = GetNode<Button>("SettleDebtButton");
+        SettleDebtDoneButton = GetNode<Button>("SettleDebtDoneButton");
 
         Vector2 MidPoint = GetViewport().Size / 2;
         ChallengeButton.RectPosition = MidPoint - ChallengeButton.RectSize;
 
         PopulateUnits(PlayerLeader, new List<int> { 1, });
-        PopulateUnits(EnemyLeader1, new List<int> { 1, 1, 4, 4, 5 });
-        PopulateUnits(EnemyLeader2, new List<int> { 1, 2, 2, 3, 3 });
-        PopulateUnits(EnemyLeader3, new List<int> { 1, 1, 1, 2, 3, 4 });
-        PopulateUnits(EnemyLeader4, new List<int> { 5, 5, 5, 5 });
-        PopulateUnits(EnemyLeader5, new List<int> { 1, 1, 1, 1, 1, 1, 1, 1 });
+        PopulateUnits(EnemyLeader1, new List<int> { 1, 1, 2 });
+        PopulateUnits(EnemyLeader2, new List<int> { 1, 2, 2, 3 });
+        PopulateUnits(EnemyLeader3, new List<int> { 1, 1, 3, 3, 4 });
+        PopulateUnits(EnemyLeader4, new List<int> { 3, 3, 5, 5 });
+        PopulateUnits(EnemyLeader5, new List<int> { 4, 4, 4, 5, 5, 5 });
 
         PlayerLeader.Connect("LeaderSelected", this, nameof(OnLeaderSelected));
         PlayerLeader.Connect("LeaderDeselected", this, nameof(OnLeaderDeselected));
         ChallengeButton.Connect("pressed", this, nameof(OnChallengeButtonPressed));
         BorrowButton.Connect("pressed", this, nameof(OnBorrowButtonPressed));
         BorrowDoneButton.Connect("pressed", this, nameof(OnBorrowDoneButtonPressed));
+        SettleDebtButton.Connect("pressed", this, nameof(OnSettleDebtButtonPressed));
+        SettleDebtDoneButton.Connect("pressed", this, nameof(OnSettleDebtDoneButtonPressed));
     }
 
     public List<Unit> GetPlayerUnits()
@@ -67,7 +79,7 @@ public class Kingdom : Node2D
 
     public void SetPlayerDestination(Vector2 destination)
     {
-        if (CurrentState != State.Borrow)
+        if (CurrentState != State.Borrow && CurrentState != State.SettleDebt)
         {
             PlayerLeader.SetDestination(destination);
         }
@@ -78,9 +90,14 @@ public class Kingdom : Node2D
         PlayerLeader.RemoveUnits();
     }
 
-    public void AddPlayerUnits(List<Unit> units)
+    public void AddPlayerUnits(List<Unit> units, Boolean forcePosition = false)
     {
-        PlayerLeader.AddUnits(units);
+        PlayerLeader.AddUnits(units, forcePosition);
+    }
+
+    public Vector2 GetPlayerGlobalPosition()
+    {
+        return PlayerLeader.GetKinematicGlobalPosition();
     }
 
     private void OnLeaderSelected(Leader leader)
@@ -88,11 +105,22 @@ public class Kingdom : Node2D
         SelectedLeader = leader;
         CurrentState = State.Selection;
 
-        // TODO: compare leader with player units
-        foreach (Unit leaderUnit in SelectedLeader.GetUnits())
-        {
+        IsFactionWillingToFight = leader.GetDebt() <= 0;
+        // HashSet<int> enemyFactions = new HashSet<int>();
+        // enemyFactions.Add(SelectedLeader.FactionId);
+        // foreach (Unit enemyUnit in SelectedLeader.GetUnits())
+        // {
+        //     enemyFactions.Add(enemyUnit.GetFactionId());
+        // }
 
-        }
+        // IsFactionWillingToFight = true;
+        // foreach (Unit playerUnit in PlayerLeader.GetUnits())
+        // {
+        //     if (enemyFactions.Contains(playerUnit.GetFactionId()))
+        //     {
+        //         IsFactionWillingToFight = false;
+        //     }
+        // }
     }
 
     private void OnLeaderDeselected()
@@ -127,8 +155,50 @@ public class Kingdom : Node2D
         List<Unit> totalSelectedUnits = new List<Unit>(leaderSelectedUnits);
         totalSelectedUnits.AddRange(playerUnits);
         PlayerLeader.AddUnits(totalSelectedUnits);
-        CurrentState = State.Default;
+        CurrentState = State.Selection;
         SelectedLeader.StopBorrowMode();
+    }
+
+    public void RaiseDebt()
+    {
+        foreach (Node node in EnemyLeadersNode.GetChildren())
+        {
+            if (node is Leader)
+            {
+                Leader leader = (Leader)node;
+                leader.RaiseDebt();
+            }
+        }
+    }
+
+    private void OnSettleDebtButtonPressed()
+    {
+        CurrentState = State.SettleDebt;
+        PlayerLeader.CancelNavigation();
+        PlayerLeader.StartBorrowMode();
+    }
+
+    private void OnSettleDebtDoneButtonPressed()
+    {
+        Unit[] playerSelectedUnits = PlayerLeader.GetSelectedUnits().ToArray();
+        foreach (Unit unit in playerSelectedUnits)
+        {
+            Vector2 offset = PlayerLeader.GetBodyGlobalPosition() - SelectedLeader.GetBodyGlobalPosition();
+            unit.Position += SelectedLeader.GetBodyPosition() + offset - PlayerLeader.GetBodyPosition();
+        }
+        Unit[] enemyUnits = SelectedLeader.GetUnits().ToArray();
+        PlayerLeader.RemoveSelectedUnits();
+        List<Unit> totalSelectedUnits = new List<Unit>(playerSelectedUnits);
+        int credit = 0;
+        foreach (Unit playerUnit in playerSelectedUnits)
+        {
+            credit += playerUnit.Power;
+        }
+        SelectedLeader.Credit(credit);
+        totalSelectedUnits.AddRange(enemyUnits);
+        SelectedLeader.AddUnits(totalSelectedUnits);
+        CurrentState = State.Default;
+        PlayerLeader.StopBorrowMode();
     }
 
     private void PopulateUnits(Leader leader, List<int> unitPowers)
@@ -140,7 +210,7 @@ public class Kingdom : Node2D
             Unit unitInstance = (Unit)UnitScene.Instance();
             unitInstance.Power = unitPowers[unitIdx];
             unitInstance.Position = new Vector2(unitIdx * 64 - unitPowers.Count * 64 / 2, random.Next(-100, 100));
-            unitInstance.SetFactionId((int)leader.Name.Hash());
+            unitInstance.SetFactionId(leader.FactionId);
             followers.Add(unitInstance);
         }
         leader.AddUnits(followers);
@@ -155,19 +225,43 @@ public class Kingdom : Node2D
                 ChallengeButton.Hide();
                 BorrowButton.Hide();
                 BorrowDoneButton.Hide();
+                SettleDebtButton.Hide();
+                SettleDebtDoneButton.Hide();
                 break;
             case State.Selection:
                 ChallengeButton.Show();
+                ChallengeButton.Disabled = !IsFactionWillingToFight;
                 BorrowButton.Show();
                 BorrowDoneButton.Hide();
-                ChallengeButton.RectPosition = SelectedLeader.Position - ChallengeButton.RectSize / 2 + Vector2.Up * 20;
+                SettleDebtDoneButton.Hide();
+                if (SelectedLeader.GetDebt() > 0)
+                {
+                    SettleDebtButton.Show();
+                    SettleDebtButton.Text = $"Settle Debt ({SelectedLeader.GetDebt()})";
+                }
+                else
+                {
+                    SettleDebtButton.Hide();
+                }
+                ChallengeButton.RectPosition = SelectedLeader.Position - ChallengeButton.RectSize / 2;
                 BorrowButton.RectPosition = SelectedLeader.Position - BorrowButton.RectSize / 2 + Vector2.Down * ChallengeButton.RectSize.y;
+                SettleDebtButton.RectPosition = SelectedLeader.Position - SettleDebtButton.RectSize / 2 + Vector2.Down * ChallengeButton.RectSize.y * 2;
                 break;
             case State.Borrow:
                 ChallengeButton.Hide();
                 BorrowButton.Hide();
                 BorrowDoneButton.Show();
+                SettleDebtButton.Hide();
+                SettleDebtDoneButton.Hide();
                 BorrowDoneButton.RectPosition = SelectedLeader.Position - BorrowDoneButton.RectSize / 2 + Vector2.Down * ChallengeButton.RectSize.y;
+                break;
+            case State.SettleDebt:
+                ChallengeButton.Hide();
+                BorrowButton.Hide();
+                BorrowDoneButton.Hide();
+                SettleDebtButton.Hide();
+                SettleDebtDoneButton.Show();
+                SettleDebtDoneButton.RectPosition = SelectedLeader.Position - SettleDebtButton.RectSize / 2 + Vector2.Down * ChallengeButton.RectSize.y * 2;
                 break;
         }
     }

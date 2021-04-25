@@ -17,6 +17,15 @@ public class Battle : Node2D
 
     private Leader EnemyLeader;
 
+    enum State
+    {
+        PreBattle,
+        InBattle,
+
+    }
+
+    private State CurrentState = State.PreBattle;
+
     // Called when the node enters the scene tree for the first time.
     public override void _Ready()
     {
@@ -37,30 +46,73 @@ public class Battle : Node2D
     {
         PlayerArmy.WakeUnits();
         EnemyArmy.WakeUnits();
-        int playerPower = PlayerArmy.GetTotalPower();
-        int enemyPower = EnemyArmy.GetTotalPower();
+
         List<Unit> enemySelectedUnits = EnemyArmy.GetSelectedUnits();
+        List<Unit> enemyUnits = new List<Unit>(EnemyArmy.GetUnits());
         List<Unit> playerSelectedUnits = PlayerArmy.GetSelectedUnits();
+        List<Unit> playerUnits = new List<Unit>(PlayerArmy.GetUnits());
+        int playerPower = 0;
+        int enemyPower = 0;
+        foreach (Unit enemyUnit in enemySelectedUnits)
+        {
+            enemyPower += enemyUnit.Power;
+        }
+        foreach (Unit playerUnit in playerSelectedUnits)
+        {
+            playerPower += playerUnit.Power;
+        }
         if (playerPower > enemyPower)
         {
-            EnemyArmy.RemoveSelectedUnits();
-            PlayerArmy.AddRestingUnits(enemySelectedUnits);
+            if (enemyPower == 0)
+            {
+                EnemyArmy.RemoveUnits();
+                PlayerArmy.AddRestingUnits(enemyUnits);
+            }
+            else
+            {
+                EnemyArmy.RemoveSelectedUnits();
+                PlayerArmy.AddRestingUnits(enemySelectedUnits);
+            }
         }
         else if (enemyPower > playerPower)
         {
-            PlayerArmy.RemoveSelectedUnits();
-            EnemyArmy.AddRestingUnits(playerSelectedUnits);
+
+            if (playerPower == 0)
+            {
+                PlayerArmy.RemoveUnits();
+                EnemyArmy.AddRestingUnits(playerUnits);
+            }
+            else
+            {
+                PlayerArmy.RemoveSelectedUnits();
+                EnemyArmy.AddRestingUnits(playerSelectedUnits);
+            }
         }
         PlayerArmy.UpdateUnitPositions();
         EnemyArmy.UpdateUnitPositions();
         PlayerArmy.DeselectAll();
         EnemyArmy.DeselectAll();
+
+        if (EnemyArmy.GetArmyPower() <= 0)
+        {
+            EnemyLeader.SetDefeated();
+        }
+
+        CurrentState = State.PreBattle;
     }
 
     private void OnEngagePressed()
     {
         EnemyArmy.SetRandomSelection();
+        List<Unit> units = new List<Unit>(EnemyArmy.GetSelectedUnits());
+        units.AddRange(PlayerArmy.GetSelectedUnits());
+        foreach (Unit unit in units.ToArray())
+        {
+            unit.SetNavigating(GetViewportRect().Size / 2);
+        }
+
         EngageTimer.Start();
+        CurrentState = State.InBattle;
     }
 
     public void SetEnemyLeader(Leader leader)
@@ -112,13 +164,20 @@ public class Battle : Node2D
         Vector2 MidPoint = screenSize / 2;
         PlayerArmy.Position = (MidPoint + SouthPoint) / 2;
         EnemyArmy.Position = (MidPoint + NorthPoint) / 2;
-
         EngageButton.RectPosition = MidPoint - EngageButton.RectSize;
     }
 
     //  // Called every frame. 'delta' is the elapsed time since the previous frame.
-    //  public override void _Process(float delta)
-    //  {
-    //      
-    //  }
+    public override void _Process(float delta)
+    {
+        switch (CurrentState)
+        {
+            case State.PreBattle:
+                EngageButton.Show();
+                break;
+            case State.InBattle:
+                EngageButton.Hide();
+                break;
+        }
+    }
 }

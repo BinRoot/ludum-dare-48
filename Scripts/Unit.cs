@@ -30,10 +30,14 @@ public class Unit : KinematicBody2D
         MouseHover,
         Selected,
         Resting,
-        Following
+        Following,
+        Navigating,
     }
 
     private Random Random;
+
+    private Vector2 DestinationPosition;
+    private Boolean IsAutoNavigating = false;
 
 
     // Called when the node enters the scene tree for the first time.
@@ -86,6 +90,17 @@ public class Unit : KinematicBody2D
     {
         CurrentState = State.Resting;
         EmitSignal(nameof(UnitSelected), this);
+    }
+
+    public void SetNavigating(Vector2 destinationPosition)
+    {
+        CurrentState = State.Navigating;
+        DestinationPosition = destinationPosition;
+    }
+
+    public Boolean IsNavigating()
+    {
+        return CurrentState == State.Navigating;
     }
 
     public Boolean IsResting()
@@ -176,6 +191,11 @@ public class Unit : KinematicBody2D
         Modulate = new Color(Random.Next(0, 255) / 256f, Random.Next(0, 255) / 256f, Random.Next(0, 255) / 256f, 1);
     }
 
+    public int GetFactionId()
+    {
+        return FactionId;
+    }
+
     private void OnMouseEntered()
     {
         if (CurrentState == State.Default)
@@ -192,10 +212,10 @@ public class Unit : KinematicBody2D
         }
     }
 
-    private void FollowLeader()
+    private void NavigateTo(Vector2 position, int delta = 64)
     {
-        Vector2 direction = LeaderPosition - GlobalPosition;
-        if (direction.Length() > 64)
+        Vector2 direction = position - GlobalPosition;
+        if (direction.Length() > delta)
         {
             direction = direction.Normalized();
             MoveAndSlide(direction * 80);
@@ -226,7 +246,12 @@ public class Unit : KinematicBody2D
             case State.Following:
                 Highlight.Hide();
                 Label2.Hide();
-                FollowLeader();
+                NavigateTo(LeaderPosition);
+                break;
+            case State.Navigating:
+                Highlight.Hide();
+                Label2.Hide();
+                NavigateTo(DestinationPosition, 4);
                 break;
         }
     }

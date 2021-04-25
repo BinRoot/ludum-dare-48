@@ -5,7 +5,6 @@ using Godot;
 public class Army : Node2D
 {
     private List<Unit> Units = new List<Unit>();
-    private List<Unit> SelectedUnits = new List<Unit>();
 
     private Label TotalCountLabel;
 
@@ -78,7 +77,15 @@ public class Army : Node2D
 
     public List<Unit> GetSelectedUnits()
     {
-        return new List<Unit>(SelectedUnits);
+        List<Unit> selectedUnits = new List<Unit>();
+        foreach (Unit unit in Units.ToArray())
+        {
+            if (unit.IsSelected() || unit.IsNavigating())
+            {
+                selectedUnits.Add(unit);
+            }
+        }
+        return selectedUnits;
     }
 
     public List<Unit> GetUnits()
@@ -106,15 +113,28 @@ public class Army : Node2D
 
     public void RemoveSelectedUnits()
     {
-        foreach (Unit unit in SelectedUnits.ToArray())
+        foreach (Unit unit in Units.ToArray())
         {
-            RemoveChild(unit);
+            if (unit.IsSelected() || unit.IsNavigating())
+            {
+                RemoveChild(unit);
+            }
         }
     }
 
     public int GetTotalPower()
     {
         return TotalPower;
+    }
+
+    public int GetArmyPower()
+    {
+        int power = 0;
+        foreach (Unit unit in Units.ToArray())
+        {
+            power += unit.Power;
+        }
+        return power;
     }
 
     private void UpdateChildrenUnits()
@@ -133,7 +153,6 @@ public class Army : Node2D
     {
         UpdateChildrenUnits();
         int totalPowerCount = 0;
-        SelectedUnits.Clear();
         int xSpacing = 66;
         int xOffset = xSpacing * (Units.Count - 1) / 2;
         for (int unitIdx = 0; unitIdx < Units.Count; unitIdx++)
@@ -147,7 +166,6 @@ public class Army : Node2D
             }
             if (unit.IsSelected())
             {
-                SelectedUnits.Add(unit);
                 totalPowerCount += unit.Power;
             }
         }
@@ -172,7 +190,7 @@ public class Army : Node2D
     {
         foreach (Unit unit in Units.ToArray())
         {
-            if (unit.IsSelected())
+            if (unit.IsSelected() || unit.IsNavigating())
             {
                 unit.SetResting();
             }

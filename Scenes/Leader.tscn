@@ -34,3 +34,28 @@ collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="KinematicBody2D/Area2D"]
 shape = SubResource( 2 )
+
+[node name="DebugLabel" type="Label" parent="KinematicBody2D"]
+margin_top = 70.7092
+margin_right = 40.0
+margin_bottom = 84.7092
+grow_horizontal = 2
+grow_vertical = 2
+text = "RIP"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="DebtLabel" type="Label" parent="KinematicBody2D"]
+margin_top = 45.8733
+margin_right = 40.0
+margin_bottom = 59.8733
+grow_horizontal = 2
+grow_vertical = 2
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
