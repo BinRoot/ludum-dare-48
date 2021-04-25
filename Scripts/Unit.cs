@@ -22,6 +22,7 @@ public class Unit : KinematicBody2D
     private Vector2 LeaderPosition = Vector2.Zero;
 
     private Sprite Highlight;
+    private AnimatedSprite AnimatedSprite;
 
     private int FactionId;
 
@@ -49,6 +50,7 @@ public class Unit : KinematicBody2D
         Label2 = GetNode<Label>("Label2");
         Area2D = GetNode<Area2D>("Area2D");
         Highlight = GetNode<Sprite>("Highlight");
+        AnimatedSprite = GetNode<AnimatedSprite>("AnimatedSprite");
 
         Label1.Text = Power.ToString();
         Label1.AddColorOverride("font_color", new Color(0.1f, 0.2f, 0, 1));
@@ -224,6 +226,11 @@ public class Unit : KinematicBody2D
         {
             direction = direction.Normalized();
             MoveAndSlide(direction * Speed);
+            AnimatedSprite.Play();
+        }
+        else
+        {
+            AnimatedSprite.Stop();
         }
     }
 

@@ -25,6 +25,8 @@ public class Leader : Node2D
 
     private Sprite Highlight;
 
+    private AnimatedSprite AnimatedSprite;
+
     private int MovementSpeed = 200;
 
     private Boolean IsAutoNavigating;
@@ -67,6 +69,7 @@ public class Leader : Node2D
         FollowersNode = GetNode<Node2D>("Followers");
         Area2D = GetNode<Area2D>("KinematicBody2D/Area2D");
         Highlight = GetNode<Sprite>("KinematicBody2D/Highlight");
+        AnimatedSprite = GetNode<AnimatedSprite>("KinematicBody2D/AnimatedSprite");
         DebtLabel = GetNode<Label>("KinematicBody2D/DebtLabel");
         DebugLabel = GetNode<Label>("KinematicBody2D/DebugLabel");
         DialogLabel = GetNode<Label>("KinematicBody2D/DialogLabel");
@@ -78,7 +81,10 @@ public class Leader : Node2D
         }
 
         Random random = new Random(FactionId);
-        KinematicBody.Modulate = new Color(random.Next(0, 128) / 256f, random.Next(0, 128) / 256f, random.Next(0, 128) / 256f, 1);
+        if (IsCPU)
+        {
+            KinematicBody.Modulate = new Color(random.Next(120, 160) / 256f, random.Next(120, 160) / 256f, random.Next(120, 160) / 256f, 1);
+        }
 
         Camera = (Camera2D)GetTree().GetNodesInGroup("camera")[0];
         PlayerLeader = (Leader)GetTree().GetNodesInGroup("player_leader")[0];
@@ -297,6 +303,11 @@ public class Leader : Node2D
             {
                 DirectionFacing = new Vector2(vector);
                 IsAutoNavigating = false;
+                AnimatedSprite.Play();
+            }
+            else if (!IsAutoNavigating)
+            {
+                AnimatedSprite.Stop();
             }
             KinematicBody.MoveAndSlide(vector * MovementSpeed);
         }
@@ -308,10 +319,12 @@ public class Leader : Node2D
             {
                 vector = vector.Normalized();
                 KinematicBody.MoveAndSlide(vector * MovementSpeed);
+                AnimatedSprite.Play();
             }
             else
             {
                 IsAutoNavigating = false;
+                AnimatedSprite.Stop();
             }
         }
 

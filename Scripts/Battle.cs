@@ -17,6 +17,7 @@ public class Battle : Node2D
 
     private Leader EnemyLeader;
 
+
     enum State
     {
         PreBattle,
@@ -184,5 +185,6 @@ public class Battle : Node2D
                 EngageButton.Hide();
                 break;
         }
+
     }
 }
