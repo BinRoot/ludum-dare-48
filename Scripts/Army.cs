@@ -178,7 +178,7 @@ public class Army : Node2D
     {
         UpdateChildrenUnits();
         int totalPowerCount = 0;
-        int xSpacing = 66;
+        int xSpacing = 55;
         int xOffset = xSpacing * (Units.Count - 1) / 2;
         for (int unitIdx = 0; unitIdx < Units.Count; unitIdx++)
         {
@@ -196,7 +196,7 @@ public class Army : Node2D
         }
         TotalPower = totalPowerCount;
         TotalCountLabel.Text = totalPowerCount.ToString();
-        TotalCountLabel.RectPosition = new Vector2(-2, -20 + 50 * (IsCPU ? 1 : -1));
+        TotalCountLabel.RectPosition = new Vector2(-TotalCountLabel.RectSize.x / 2, -20 + 50 * (IsCPU ? 1 : -1));
         //TotalCountLabel.RectSize = new Vector2(200, 200);
     }
 

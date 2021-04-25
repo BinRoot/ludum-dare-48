@@ -26,6 +26,8 @@ public class Unit : KinematicBody2D
 
     private int FactionId;
 
+    private Color ModulateColor;
+
     private State CurrentState = State.Default;
     enum State
     {
@@ -53,11 +55,9 @@ public class Unit : KinematicBody2D
         AnimatedSprite = GetNode<AnimatedSprite>("AnimatedSprite");
 
         Label1.Text = Power.ToString();
-        Label1.AddColorOverride("font_color", new Color(0.1f, 0.2f, 0, 1));
         Label1.RectPosition = new Vector2(-100, -100);
         Label1.RectSize = new Vector2(200, 200);
 
-        Label2.AddColorOverride("font_color", new Color(0.1f, 0.2f, 0, 1));
         Label2.RectPosition = new Vector2(-10, 0);
         Label2.RectSize = new Vector2(20, 20);
 
@@ -195,7 +195,7 @@ public class Unit : KinematicBody2D
     {
         FactionId = id;
         Random = new Random(FactionId);
-        Modulate = new Color(Random.Next(0, 255) / 256f, Random.Next(0, 255) / 256f, Random.Next(0, 255) / 256f, 1);
+        ModulateColor = new Color(Random.Next(0, 255) / 256f, Random.Next(0, 255) / 256f, Random.Next(0, 255) / 256f, 1);
     }
 
     public int GetFactionId()
@@ -237,6 +237,7 @@ public class Unit : KinematicBody2D
     //  // Called every frame. 'delta' is the elapsed time since the previous frame.
     public override void _Process(float delta)
     {
+        AnimatedSprite.Modulate = ModulateColor;
         switch (CurrentState)
         {
             case State.Default:

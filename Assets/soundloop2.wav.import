@@ -1,0 +1,21 @@
+[remap]
+
+importer="wav"
+type="AudioStreamSample"
+path="res://.import/soundloop2.wav-0852a8687a27f6a4fe7b8e4f90694093.sample"
+
+[deps]
+
+source_file="res://Assets/soundloop2.wav"
+dest_files=[ "res://.import/soundloop2.wav-0852a8687a27f6a4fe7b8e4f90694093.sample" ]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop=true
+compress/mode=0

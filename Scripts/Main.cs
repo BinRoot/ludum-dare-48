@@ -18,6 +18,9 @@ public class Main : Node2D
     private Camera2D FollowCam;
     private Camera2D BattleCam;
 
+    AudioStreamPlayer KingdomAudio;
+    AudioStreamPlayer BattleAudio;
+
     PackedScene MarkerScene = GD.Load<PackedScene>("res://Scenes/Marker.tscn");
 
     // Called when the node enters the scene tree for the first time.
@@ -27,6 +30,8 @@ public class Main : Node2D
         Battle = GetNode<Battle>("Battle");
         FollowCam = (Camera2D)GetTree().GetNodesInGroup("camera")[0];
         BattleCam = GetNode<Camera2D>("BattleCam");
+        KingdomAudio = GetNode<AudioStreamPlayer>("KingdomAudio");
+        BattleAudio = GetNode<AudioStreamPlayer>("BattleAudio");
 
         Kingdom.Connect("BattleInitiated", this, nameof(OnBattleInitiated));
         Battle.Connect("Retreated", this, nameof(OnRetreated));
@@ -34,6 +39,8 @@ public class Main : Node2D
 
     private void OnRetreated(Leader leader)
     {
+        KingdomAudio.Play();
+        BattleAudio.Stop();
         FollowCam.MakeCurrent();
         // BattleCam.ClearCurrent();
         CurrentState = State.Kingdom;
@@ -59,6 +66,8 @@ public class Main : Node2D
 
     private void OnBattleInitiated(Leader leader)
     {
+        KingdomAudio.Stop();
+        BattleAudio.Play();
         BattleCam.MakeCurrent();
         // FollowCam.ClearCurrent();
         CurrentState = State.Battle;

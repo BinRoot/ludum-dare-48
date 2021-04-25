@@ -25,7 +25,9 @@ public class Kingdom : Node2D
 
     private Boolean IsFactionWillingToFight;
 
-    private int ButtonYOffset = 64;
+    private AudioStreamPlayer ButtonAudio;
+
+    private int ButtonYOffset = -32;
 
     enum State
     {
@@ -56,6 +58,7 @@ public class Kingdom : Node2D
         BorrowDoneButton = GetNode<Button>("BorrowDoneButton");
         SettleDebtButton = GetNode<Button>("SettleDebtButton");
         SettleDebtDoneButton = GetNode<Button>("SettleDebtDoneButton");
+        ButtonAudio = GetNode<AudioStreamPlayer>("ButtonSelect");
 
         Vector2 MidPoint = GetViewport().Size / 2;
         ChallengeButton.RectPosition = MidPoint - ChallengeButton.RectSize;
@@ -136,12 +139,14 @@ public class Kingdom : Node2D
 
     private void OnChallengeButtonPressed()
     {
+        ButtonAudio.Play();
         CurrentState = State.Default;
         EmitSignal(nameof(BattleInitiated), SelectedLeader);
     }
 
     private void OnBorrowButtonPressed()
     {
+        ButtonAudio.Play();
         CurrentState = State.Borrow;
         PlayerLeader.CancelNavigation();
         SelectedLeader.StartBorrowMode();
@@ -149,6 +154,7 @@ public class Kingdom : Node2D
 
     private void OnBorrowDoneButtonPressed()
     {
+        ButtonAudio.Play();
         Unit[] leaderSelectedUnits = SelectedLeader.GetSelectedUnits().ToArray();
         foreach (Unit unit in leaderSelectedUnits)
         {
@@ -178,6 +184,7 @@ public class Kingdom : Node2D
 
     private void OnSettleDebtButtonPressed()
     {
+        ButtonAudio.Play();
         CurrentState = State.SettleDebt;
         PlayerLeader.CancelNavigation();
         PlayerLeader.StartBorrowMode();
@@ -185,6 +192,7 @@ public class Kingdom : Node2D
 
     private void OnSettleDebtDoneButtonPressed()
     {
+        ButtonAudio.Play();
         Unit[] playerSelectedUnits = PlayerLeader.GetSelectedUnits().ToArray();
         foreach (Unit unit in playerSelectedUnits)
         {
@@ -204,6 +212,7 @@ public class Kingdom : Node2D
         SelectedLeader.AddUnits(totalSelectedUnits);
         CurrentState = State.Selection;
         PlayerLeader.StopBorrowMode();
+        IsFactionWillingToFight = SelectedLeader.GetDebt() <= 0;
     }
 
     private void PopulateUnits(Leader leader, List<int> unitPowers)
@@ -273,7 +282,7 @@ public class Kingdom : Node2D
                 BorrowDoneButton.Hide();
                 SettleDebtButton.Hide();
                 SettleDebtDoneButton.Show();
-                SettleDebtDoneButton.RectPosition = SelectedLeader.Position + Vector2.Down * ButtonYOffset - SettleDebtDoneButton.RectSize / 2 + Vector2.Down * ChallengeButton.RectSize.y * 2;
+                SettleDebtDoneButton.RectPosition = SelectedLeader.Position + Vector2.Down * ButtonYOffset - BorrowDoneButton.RectSize / 2 + Vector2.Down * ChallengeButton.RectSize.y;
                 break;
         }
     }

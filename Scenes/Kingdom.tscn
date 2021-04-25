@@ -1,9 +1,10 @@
-[gd_scene load_steps=5 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://Scenes/Leader.tscn" type="PackedScene" id=1]
 [ext_resource path="res://Scripts/Kingdom.cs" type="Script" id=2]
 [ext_resource path="res://Resources/button_font.tres" type="DynamicFont" id=3]
 [ext_resource path="res://Assets/Background3.png" type="Texture" id=4]
+[ext_resource path="res://Assets/button.wav" type="AudioStream" id=5]
 
 [node name="Kingdom" type="Node2D"]
 script = ExtResource( 2 )
@@ -12,7 +13,10 @@ script = ExtResource( 2 )
 position = Vector2( 1162.8, 328.219 )
 texture = ExtResource( 4 )
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Background3"]
+[node name="PlayerLeader" parent="." groups=[
+"player_leader",
+] instance=ExtResource( 1 )]
+position = Vector2( 132.574, 305.038 )
 
 [node name="EnemyLeaders" type="Node2D" parent="."]
 
@@ -41,11 +45,6 @@ IsCPU = true
 position = Vector2( 1726.31, 493.562 )
 IsCPU = true
 
-[node name="PlayerLeader" parent="." groups=[
-"player_leader",
-] instance=ExtResource( 1 )]
-position = Vector2( 132.574, 305.038 )
-
 [node name="ChallengeButton" type="Button" parent="."]
 margin_right = 12.0
 margin_bottom = 20.0
@@ -53,12 +52,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_default_cursor_shape = 2
 custom_fonts/font = ExtResource( 3 )
-custom_colors/font_color_disabled = Color( 0.321569, 0.415686, 0.403922, 1 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-custom_colors/font_color_hover = Color( 0.47451, 0.196078, 0.701961, 1 )
-custom_colors/font_color_pressed = Color( 0.231373, 0.0745098, 0.360784, 1 )
-text = "Challenge"
-flat = true
+text = "Fight"
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -70,12 +64,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_default_cursor_shape = 2
 custom_fonts/font = ExtResource( 3 )
-custom_colors/font_color_disabled = Color( 0.321569, 0.415686, 0.403922, 1 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-custom_colors/font_color_hover = Color( 0.47451, 0.196078, 0.701961, 1 )
-custom_colors/font_color_pressed = Color( 0.231373, 0.0745098, 0.360784, 1 )
 text = "Borrow"
-flat = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -87,12 +76,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_default_cursor_shape = 2
 custom_fonts/font = ExtResource( 3 )
-custom_colors/font_color_disabled = Color( 0.321569, 0.415686, 0.403922, 1 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-custom_colors/font_color_hover = Color( 0.47451, 0.196078, 0.701961, 1 )
-custom_colors/font_color_pressed = Color( 0.231373, 0.0745098, 0.360784, 1 )
 text = "Done"
-flat = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -104,12 +88,7 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_default_cursor_shape = 2
 custom_fonts/font = ExtResource( 3 )
-custom_colors/font_color_disabled = Color( 0.321569, 0.415686, 0.403922, 1 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-custom_colors/font_color_hover = Color( 0.47451, 0.196078, 0.701961, 1 )
-custom_colors/font_color_pressed = Color( 0.231373, 0.0745098, 0.360784, 1 )
 text = "Settle Debt"
-flat = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
@@ -121,12 +100,10 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_default_cursor_shape = 2
 custom_fonts/font = ExtResource( 3 )
-custom_colors/font_color_disabled = Color( 0.321569, 0.415686, 0.403922, 1 )
-custom_colors/font_color = Color( 0, 0, 0, 1 )
-custom_colors/font_color_hover = Color( 0.47451, 0.196078, 0.701961, 1 )
-custom_colors/font_color_pressed = Color( 0.231373, 0.0745098, 0.360784, 1 )
 text = "Done"
-flat = true
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="ButtonSelect" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 5 )

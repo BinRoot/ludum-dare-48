@@ -26,6 +26,7 @@ public class Leader : Node2D
     private Sprite Highlight;
 
     private AnimatedSprite AnimatedSprite;
+    private AnimatedSprite AnimatedSprite2;
 
     private int MovementSpeed = 200;
 
@@ -70,6 +71,7 @@ public class Leader : Node2D
         Area2D = GetNode<Area2D>("KinematicBody2D/Area2D");
         Highlight = GetNode<Sprite>("KinematicBody2D/Highlight");
         AnimatedSprite = GetNode<AnimatedSprite>("KinematicBody2D/AnimatedSprite");
+        AnimatedSprite2 = GetNode<AnimatedSprite>("KinematicBody2D/AnimatedSprite2");
         DebtLabel = GetNode<Label>("KinematicBody2D/DebtLabel");
         DebugLabel = GetNode<Label>("KinematicBody2D/DebugLabel");
         DialogLabel = GetNode<Label>("KinematicBody2D/DialogLabel");
@@ -83,7 +85,15 @@ public class Leader : Node2D
         Random random = new Random(FactionId);
         if (IsCPU)
         {
-            KinematicBody.Modulate = new Color(random.Next(120, 160) / 256f, random.Next(120, 160) / 256f, random.Next(120, 160) / 256f, 1);
+            AnimatedSprite2.Modulate = new Color(random.Next(0, 200) / 256f, random.Next(0, 200) / 256f, random.Next(0, 200) / 256f, 1);
+            AnimatedSprite2.Show();
+            AnimatedSprite2.Frame = random.Next(0, 4);
+            AnimatedSprite.Hide();
+        }
+        else
+        {
+            AnimatedSprite.Show();
+            AnimatedSprite2.Hide();
         }
 
         Camera = (Camera2D)GetTree().GetNodesInGroup("camera")[0];
@@ -355,7 +365,7 @@ public class Leader : Node2D
         Duration += delta;
         if (Name == "EnemyLeader1")
         {
-            if (TutorialStep == 0 && Duration > 5)
+            if (TutorialStep == 0 && Duration > 0.5)
             {
                 DialogLabel.Text = "Prince, is that really you?";
                 TutorialStep += 1;

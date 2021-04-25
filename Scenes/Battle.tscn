@@ -1,11 +1,31 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Scripts/Battle.cs" type="Script" id=1]
 [ext_resource path="res://Scenes/Army.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Resources/button_font.tres" type="DynamicFont" id=3]
+[ext_resource path="res://Fonts/SundownerRegular-K77pD.ttf" type="DynamicFontData" id=4]
+[ext_resource path="res://Assets/BattleBackground.png" type="Texture" id=5]
+[ext_resource path="res://Assets/win.wav" type="AudioStream" id=6]
+[ext_resource path="res://Assets/lose.wav" type="AudioStream" id=7]
+
+[sub_resource type="DynamicFont" id=1]
+size = 30
+outline_size = 8
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 4 )
+
+[sub_resource type="DynamicFont" id=2]
+outline_size = 2
+outline_color = Color( 0, 0, 0, 1 )
+font_data = ExtResource( 4 )
 
 [node name="Battle" type="Node2D"]
 script = ExtResource( 1 )
+
+[node name="Sprite" type="Sprite" parent="."]
+position = Vector2( 512, 300 )
+scale = Vector2( 1, 0.8 )
+texture = ExtResource( 5 )
 
 [node name="PlayerArmy" parent="." instance=ExtResource( 2 )]
 position = Vector2( 325.755, 445.374 )
@@ -17,6 +37,7 @@ IsCPU = true
 [node name="EngageButton" type="Button" parent="."]
 grow_horizontal = 2
 grow_vertical = 2
+mouse_default_cursor_shape = 2
 custom_fonts/font = ExtResource( 3 )
 text = "Engage"
 __meta__ = {
@@ -28,10 +49,50 @@ wait_time = 2.0
 one_shot = true
 
 [node name="RetreatButton" type="Button" parent="."]
-margin_right = 12.0
-margin_bottom = 20.0
+margin_left = 15.7987
+margin_top = 546.184
+margin_right = 106.799
+margin_bottom = 586.184
+mouse_default_cursor_shape = 2
 custom_fonts/font = ExtResource( 3 )
 text = "Retreat"
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="WinnerLabel" type="Label" parent="."]
+modulate = Color( 1, 1, 1, 0 )
+margin_right = 155.0
+margin_bottom = 44.0
+grow_horizontal = 2
+grow_vertical = 2
+custom_fonts/font = SubResource( 1 )
+text = "Winner!"
+align = 1
+valign = 1
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="WinnerTween" type="Tween" parent="."]
+
+[node name="HintLabel" type="Label" parent="."]
+visible = false
+margin_left = 127.142
+margin_top = 555.965
+margin_right = 538.142
+margin_bottom = 579.965
+custom_fonts/font = SubResource( 2 )
+text = "All units are resting, time to retreat!"
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="WinAudio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 6 )
+volume_db = -3.534
+
+[node name="LoseAudio" type="AudioStreamPlayer" parent="."]
+stream = ExtResource( 7 )
+volume_db = -10.097
+pitch_scale = 0.86

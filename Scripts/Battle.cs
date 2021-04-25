@@ -14,9 +14,20 @@ public class Battle : Node2D
     private Button RetreatButton;
 
     private Timer EngageTimer;
+    private Timer WinnerTimer;
 
     private Leader EnemyLeader;
 
+    private Label WinnerLabel;
+    private Tween WinnerTween;
+
+    private Boolean IsAllPlayerUnitsResting;
+
+    private AudioStreamPlayer WinAudio;
+    private AudioStreamPlayer LoseAudio;
+
+
+    private Label HintLabel;
 
     enum State
     {
@@ -35,12 +46,31 @@ public class Battle : Node2D
         EngageButton = GetNode<Button>("EngageButton");
         RetreatButton = GetNode<Button>("RetreatButton");
         EngageTimer = GetNode<Timer>("EngageTimer");
+        WinnerLabel = GetNode<Label>("WinnerLabel");
+        WinnerTween = GetNode<Tween>("WinnerTween");
+        HintLabel = GetNode<Label>("HintLabel");
+        WinAudio = GetNode<AudioStreamPlayer>("WinAudio");
+        LoseAudio = GetNode<AudioStreamPlayer>("LoseAudio");
 
         EngageButton.Connect("pressed", this, nameof(OnEngagePressed));
         RetreatButton.Connect("pressed", this, nameof(OnRetreatPressed));
         EngageTimer.Connect("timeout", this, nameof(OnEngageTimeout));
 
         UpdateArmyPositions();
+    }
+
+    private void ShowWinnerLabel(String text, Army army)
+    {
+        WinnerLabel.Text = text;
+        WinnerLabel.RectPosition = army.Position - WinnerLabel.RectSize / 2;
+        WinnerTween.InterpolateProperty(
+            WinnerLabel, "modulate",
+            new Color(1.0f, 1.0f, 1.0f, 1.0f),
+            new Color(1.0f, 1.0f, 1.0f, 0.0f),
+            1f, Tween.TransitionType.Linear,
+            Tween.EaseType.In
+        );
+        WinnerTween.Start();
     }
 
     private void OnEngageTimeout()
@@ -64,6 +94,7 @@ public class Battle : Node2D
         }
         if (playerPower > enemyPower)
         {
+            ShowWinnerLabel("You win!", PlayerArmy);
             if (enemyPower == 0)
             {
                 EnemyArmy.RemoveUnits();
@@ -77,7 +108,7 @@ public class Battle : Node2D
         }
         else if (enemyPower > playerPower)
         {
-
+            ShowWinnerLabel("Enemy wins!", EnemyArmy);
             if (playerPower == 0)
             {
                 PlayerArmy.RemoveUnits();
@@ -103,6 +134,14 @@ public class Battle : Node2D
 
         if (EnemyArmy.GetUnits().Count == 0 || PlayerArmy.GetUnits().Count == 0)
         {
+            if (EnemyArmy.GetUnits().Count == 0)
+            {
+                WinAudio.Play();
+            }
+            else
+            {
+                LoseAudio.Play();
+            }
             OnRetreatPressed();
         }
     }
@@ -179,12 +218,36 @@ public class Battle : Node2D
         switch (CurrentState)
         {
             case State.PreBattle:
-                EngageButton.Show();
+                if (PlayerArmy.GetSelectedUnits().Count > 0)
+                {
+                    EngageButton.Show();
+                }
+                else
+                {
+                    EngageButton.Hide();
+                }
                 break;
             case State.InBattle:
                 EngageButton.Hide();
                 break;
         }
 
+        IsAllPlayerUnitsResting = true;
+        foreach (Unit unit in PlayerArmy.GetUnits().ToArray())
+        {
+            if (!unit.IsResting())
+            {
+                IsAllPlayerUnitsResting = false;
+                break;
+            }
+        }
+        if (IsAllPlayerUnitsResting)
+        {
+            HintLabel.Show();
+        }
+        else
+        {
+            HintLabel.Hide();
+        }
     }
 }
