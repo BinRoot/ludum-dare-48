@@ -373,7 +373,7 @@ public class Leader : Node2D
             }
             else if (TutorialStep == 1 && CurrentState == State.Borrow && Duration > 0.2)
             {
-                DialogLabel.Text = "Go ahead, you'll need them!";
+                DialogLabel.Text = "Borrow at ease!";
                 TutorialStep += 1;
                 Duration = 0;
             }

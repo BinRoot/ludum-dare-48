@@ -67,8 +67,8 @@ public class Battle : Node2D
             WinnerLabel, "modulate",
             new Color(1.0f, 1.0f, 1.0f, 1.0f),
             new Color(1.0f, 1.0f, 1.0f, 0.0f),
-            1f, Tween.TransitionType.Linear,
-            Tween.EaseType.In
+            2f, Tween.TransitionType.Quad,
+            Tween.EaseType.Out
         );
         WinnerTween.Start();
     }
