@@ -12,6 +12,9 @@ public class Leader : Node2D
 
     [Export]
     private Boolean IsCPU = false;
+
+    [Export]
+    public Boolean IsBorrowOnly = false;
     private KinematicBody2D KinematicBody;
     private Vector2 DirectionFacing = Vector2.Right;
     private List<Unit> Units = new List<Unit>();
@@ -72,7 +75,6 @@ public class Leader : Node2D
 
         Camera = (Camera2D)GetTree().GetNodesInGroup("camera")[0];
     }
-
 
     public int GetDebt()
     {
@@ -179,11 +181,15 @@ public class Leader : Node2D
             {
                 FollowersNode.RemoveChild(unit);
                 Units.Remove(unit);
-                Debt += unit.Power;
+                if (!IsBorrowOnly)
+                {
+                    Debt += unit.Power;
+                }
             }
         }
         UpdateDebtLabel();
     }
+
 
     public void AddUnits(List<Unit> units, Boolean forcePosition = false)
     {

@@ -56,8 +56,8 @@ public class Kingdom : Node2D
         Vector2 MidPoint = GetViewport().Size / 2;
         ChallengeButton.RectPosition = MidPoint - ChallengeButton.RectSize;
 
-        PopulateUnits(PlayerLeader, new List<int> { 1, });
-        PopulateUnits(EnemyLeader1, new List<int> { 1, 1, 2 });
+        PopulateUnits(PlayerLeader, new List<int> { });
+        PopulateUnits(EnemyLeader1, new List<int> { 1, 1 });
         PopulateUnits(EnemyLeader2, new List<int> { 1, 2, 2, 3 });
         PopulateUnits(EnemyLeader3, new List<int> { 1, 1, 3, 3, 4 });
         PopulateUnits(EnemyLeader4, new List<int> { 3, 3, 5, 5 });
@@ -197,7 +197,7 @@ public class Kingdom : Node2D
         SelectedLeader.Credit(credit);
         totalSelectedUnits.AddRange(enemyUnits);
         SelectedLeader.AddUnits(totalSelectedUnits);
-        CurrentState = State.Default;
+        CurrentState = State.Selection;
         PlayerLeader.StopBorrowMode();
     }
 
@@ -229,9 +229,15 @@ public class Kingdom : Node2D
                 SettleDebtDoneButton.Hide();
                 break;
             case State.Selection:
-                ChallengeButton.Show();
-                ChallengeButton.Disabled = !IsFactionWillingToFight;
-                BorrowButton.Show();
+                if (!SelectedLeader.IsBorrowOnly)
+                {
+                    ChallengeButton.Show();
+                    ChallengeButton.Disabled = !IsFactionWillingToFight;
+                }
+                if (SelectedLeader.GetUnits().Count > 0)
+                {
+                    BorrowButton.Show();
+                }
                 BorrowDoneButton.Hide();
                 SettleDebtDoneButton.Hide();
                 if (SelectedLeader.GetDebt() > 0)

@@ -17,6 +17,8 @@ public class Unit : KinematicBody2D
     private Label Label2;
     private Area2D Area2D;
 
+    private int Speed = 120;
+
     private Vector2 LeaderPosition = Vector2.Zero;
 
     private Sprite Highlight;
@@ -212,13 +214,13 @@ public class Unit : KinematicBody2D
         }
     }
 
-    private void NavigateTo(Vector2 position, int delta = 64)
+    private void NavigateTo(Vector2 position, int delta = 128)
     {
         Vector2 direction = position - GlobalPosition;
         if (direction.Length() > delta)
         {
             direction = direction.Normalized();
-            MoveAndSlide(direction * 80);
+            MoveAndSlide(direction * Speed);
         }
     }
 
