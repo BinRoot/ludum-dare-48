@@ -443,6 +443,18 @@ public class Leader : Node2D
                 TutorialStep += 1;
                 Duration = 0;
             }
+            else if (CurrentState == State.Hover && Debt > 0)
+            {
+                DialogLabel.Text = "Repay my debt, to fight with honor!";
+                TutorialStep = 20;
+                Duration = 0;
+            }
+            else if (TutorialStep == 20 && Duration > 2)
+            {
+                DialogLabel.Text = "";
+                TutorialStep += 1;
+                Duration = 0;
+            }
         }
         else if (Name == "EnemyLeader3")
         {
@@ -466,17 +478,29 @@ public class Leader : Node2D
             }
             else if (CurrentState == State.Borrow && TutorialStep < 10)
             {
-                DialogLabel.Text = "Not much to pick from, buddy";
+                DialogLabel.Text = "Take what you need.";
                 TutorialStep = 10;
                 Duration = 0;
             }
-            else if (TutorialStep == 10 && Duration > 2)
+            else if (TutorialStep == 10 && Duration > 3)
             {
-                DialogLabel.Text = "But it'll serve you well";
+                DialogLabel.Text = "I expect them back later.";
                 TutorialStep += 1;
                 Duration = 0;
             }
             else if (TutorialStep == 11 && Duration > 2)
+            {
+                DialogLabel.Text = "";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (CurrentState == State.Hover && Debt > 0)
+            {
+                DialogLabel.Text = "Repay my debt, to fight with honor!";
+                TutorialStep = 20;
+                Duration = 0;
+            }
+            else if (TutorialStep == 20 && Duration > 2)
             {
                 DialogLabel.Text = "";
                 TutorialStep += 1;
@@ -489,6 +513,49 @@ public class Leader : Node2D
             {
                 DialogLabel.Text = "This isn't amateur hour!";
                 TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 1 && Duration > 2)
+            {
+                DialogLabel.Text = "";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+        }
+        else if (Name == "EnemyLeader5")
+        {
+            if (TutorialStep == 0 && PlayerLeader.GetKinematicGlobalPosition().DistanceTo(GetKinematicGlobalPosition()) < 300 && PlayerLeader.GetUnits().Count <= 4)
+            {
+                DialogLabel.Text = "That's all you got?";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 0 && PlayerLeader.GetKinematicGlobalPosition().DistanceTo(GetKinematicGlobalPosition()) < 300 && PlayerLeader.GetUnits().Count > 4)
+            {
+                DialogLabel.Text = "You seem like a worthy opponent!";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 1 && Duration > 2)
+            {
+                DialogLabel.Text = "";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+        }
+
+        else if (Name == "EnemyLeader6")
+        {
+            if (TutorialStep == 0 && PlayerLeader.GetKinematicGlobalPosition().DistanceTo(GetKinematicGlobalPosition()) < 300 && PlayerLeader.GetUnits().Count <= 4)
+            {
+                DialogLabel.Text = "I'll lend you some.";
+                TutorialStep += 1;
+                Duration = 0;
+            }
+            else if (TutorialStep == 0 && PlayerLeader.GetKinematicGlobalPosition().DistanceTo(GetKinematicGlobalPosition()) < 300 && PlayerLeader.GetUnits().Count > 4)
+            {
+                DialogLabel.Text = "I've been waiting to fight you!";
+                TutorialStep = 1;
                 Duration = 0;
             }
             else if (TutorialStep == 1 && Duration > 2)
