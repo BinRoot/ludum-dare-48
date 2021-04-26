@@ -168,6 +168,7 @@ public class Kingdom : Node2D
         PlayerLeader.AddUnits(totalSelectedUnits);
         CurrentState = State.Selection;
         SelectedLeader.StopBorrowMode();
+        IsFactionWillingToFight = SelectedLeader.GetDebt() <= 0;
     }
 
     public void RaiseDebt()
